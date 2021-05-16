@@ -1,35 +1,15 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <iostream>
+#include "../include/ad7147_pc/show_ad7147.hpp"
 
-class ShowAD7147
-{
-	private:
-		int x_num, y_num;
-	public:
-
-		ShowAD7147(const int x, const int y);
-		~ShowAD7147();
-		void show3DBox(uint16_t (&data)[NUMBER_OF_REGISTERS]);
-};
-
-ShowAD7147::ShowAD7147(const int x, const int y)
+ShowAD7147::ShowAD7147(const int x, const int y, const int z_range)
 	:x_num(x),
-	y_num(y)
+	y_num(y),
+	z_range(z_range)
 {
 	if (x_num * y_num != NUMBER_OF_REGISTERS)
 	{
 		std::cout << "faild" << std::endl;
 		exit(0);
 	}
-}
-
-ShowAD7147::~ShowAD7147(){}
-
-void ShowAD7147::show3DBox(uint16_t (&data)[NUMBER_OF_REGISTERS])
-{
-	FILE *gp;
 	gp = popen("gnuplot", "w");
 	fprintf(gp, "set boxwidth 0.4 absolute\n");
 	fprintf(gp, "set boxdepth 0.3\n");
@@ -47,13 +27,19 @@ void ShowAD7147::show3DBox(uint16_t (&data)[NUMBER_OF_REGISTERS])
 	fprintf(gp, "set x2range [ * : * ] noreverse writeback\n");
 	fprintf(gp, "set yrange [ * : * ] noreverse nowriteback\n");
 	fprintf(gp, "set y2range [ * : * ] noreverse writeback\n");
-	fprintf(gp, "set zrange [ * : * ] noreverse writeback\n");
+	fprintf(gp, "set zrange [ 0 : %d ] noreverse writeback\n", z_range);
 	fprintf(gp, "set cbrange [ * : * ] noreverse writeback\n");
 	fprintf(gp, "set rrange [ * : * ] noreverse writeback\n");
 	fprintf(gp, "set pm3d depthorder base\n");
 	fprintf(gp, "set pm3d interpolate 1,1 flush begin noftriangles border linewidth 1.000 dashtype solid corners2color mean\n");
 	fprintf(gp, "rgbfudge(x) = x*51*32768 + (11-x)*51*128 + int(abs(5.5-x)*510/9.)\n");
+}
 
+ShowAD7147::~ShowAD7147(){}
+
+void ShowAD7147::show3DBox(uint16_t (&data)[NUMBER_OF_REGISTERS])
+{
+	
 	fprintf(gp, "splot '-' using 1:2:3:(rgbfudge($1)) with boxes fc rgb variable\n");
 	
 	for (int i=0; i<x_num; i++)
@@ -67,12 +53,15 @@ void ShowAD7147::show3DBox(uint16_t (&data)[NUMBER_OF_REGISTERS])
 	fflush(gp);
 
 }
+
+/*
 int main()
 {
-	ShowAD7147 showad7147(3, 4);
-	int data[12] = {44364, 41580, 41181, 40830, 41787, 41016, 40795, 41118, 41780, 41208, 41281, 41208};
+	ShowAD7147 showad7147(3, 4, 50000);
+	uint16_t data[12] = {44364, 41580, 41181, 40830, 41787, 41016, 40795, 41118, 41780, 41208, 41281, 41208};
 
 	showad7147.show3DBox(data);
+	sleep(5);
 	return 0;
 }
-
+*/

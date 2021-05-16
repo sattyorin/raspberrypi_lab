@@ -1,8 +1,8 @@
 #include "../include/ad7147/pub_AD7147s.hpp"
 
 int main(int argc, char **argv){
-	ros::init(argc, argv, "read_AD7147s");
-	ROS_INFO("[read_AD7147s] init to read_AD7147s");
+	ros::init(argc, argv, "pub_AD7147s");
+	ROS_INFO("[pub_AD7147s] init to pub_AD7147s");
 
 	ros::NodeHandle n;
 	ros::Publisher pub_AD7147_vals0 = n.advertise<std_msgs::Int32MultiArray>("AD7147_vals0", 20);
