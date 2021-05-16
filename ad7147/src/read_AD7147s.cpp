@@ -1,4 +1,4 @@
-#include "read_AD7147s.hpp"
+#include "../include/ad7147/read_AD7147s.hpp"
 
 AD7147SPIDev::AD7147SPIDev(const char* spidev, int start_bit, int count)
 	:fd_spi(open(spidev,O_RDWR)),
@@ -185,6 +185,7 @@ void AD7147SPIDev::unselect(int which){
 	gpio[7] = pos_bitmask;
 };
 
+/*
 int main()
 {
 	// std::unique_ptr<AD7147SPIDev> ad7147spidev(new AD7147SPIDev("/dev/spidev0.0", 12, AD7147QUANTITY));
@@ -192,9 +193,9 @@ int main()
 
 	AD7147SPIDev ad7147spidev("/dev/spidev0.0", 12, AD7147QUANTITY); // 12:gpio
 	// ShowAD7147 showad7147(3, 4);
-	
+
 	ad7147spidev.initialize();
-	
+
 	uint16_t data[NUMBER_OF_REGISTERS] = {0};
 	// while(true)
 	// {
@@ -205,3 +206,4 @@ int main()
 	return 0;
 
 }
+*/

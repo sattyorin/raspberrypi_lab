@@ -211,8 +211,5 @@ include_directories(
 #add_executable(ad7147spidev src/ad7147spidev.cpp )
 #target_link_libraries(ad7147spidev ${catkin_LIBRARIES})
 
-add_executable(read_AD7147s src/read_AD7147s.cpp src/ad7147spidev.cpp)
-target_link_libraries(read_AD7147s ${catkin_LIBRARIES} )
-
-add_executable(read_AD7147 src/read_AD7147.cpp)
-target_link_libraries(read_AD7147 ${catkin_LIBRARIES})
+add_executable(pub_AD7147s src/pub_AD7147s.cpp src/read_AD7147s.cpp)
+target_link_libraries(pub_AD7147s ${catkin_LIBRARIES})
