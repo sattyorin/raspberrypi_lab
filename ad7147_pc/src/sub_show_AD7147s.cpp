@@ -3,7 +3,7 @@
 
 #include "../include/ad7147_pc/show_ad7147.hpp"
 
-ShowAD7147 showad7147(3, 4, 2500);
+ShowAD7147 showad7147(3, 4, 4000);
 uint16_t data[NUMBER_OF_REGISTERS] = {0};
 uint32_t offset[NUMBER_OF_REGISTERS] = {0};
 bool flag = false;
@@ -19,11 +19,13 @@ void Callback(const std_msgs::Int32MultiArray& msg)
 		{
 			offset[i] += msg.data[i];
 		}
-		if (n > 100) //false = uint32_t
+		if (n > 100) //offset = uint32_t
 		{
 			for (int i=0; i<NUMBER_OF_REGISTERS; i++)
 			{
-				offset[i] = offset[i]/n;
+				// offset[i] = offset[i]/(n+1);
+				offset[i] = offset[i]/(n+1) - 500;
+				printf("%d : %d\n", i, offset[i]);
 			}
 			flag = true;
 		}
@@ -34,7 +36,7 @@ void Callback(const std_msgs::Int32MultiArray& msg)
 		for (int i=0; i<NUMBER_OF_REGISTERS; i++)
 		{
 			tmp = msg.data[i] - offset[i];
-			if (tmp > 0) 
+			if (tmp > 0 && abs(tmp - data[i]) < 20000)
 			{
 				data[i] = tmp;
 				std::cout << i << ":" << data[i] << std::endl;

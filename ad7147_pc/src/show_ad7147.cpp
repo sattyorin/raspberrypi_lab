@@ -41,12 +41,14 @@ void ShowAD7147::show3DBox(uint16_t (&data)[NUMBER_OF_REGISTERS])
 {
 	
 	fprintf(gp, "splot '-' using 1:2:3:(rgbfudge($1)) with boxes fc rgb variable\n");
-	
+
+	int n = 0;	
 	for (int i=0; i<x_num; i++)
 	{
 		for (int j=0; j<y_num; j++)
 		{
-			fprintf(gp, "%d, %d, %d\n", i+1, j+1, data[i+j]);
+			fprintf(gp, "%d, %d, %d\n", i+1, j+1, data[n]);
+			n++;
 		}
 	}
 	fprintf(gp, "e\n");
@@ -57,8 +59,8 @@ void ShowAD7147::show3DBox(uint16_t (&data)[NUMBER_OF_REGISTERS])
 /*
 int main()
 {
-	ShowAD7147 showad7147(3, 4, 50000);
-	uint16_t data[12] = {44364, 41580, 41181, 40830, 41787, 41016, 40795, 41118, 41780, 41208, 41281, 41208};
+	ShowAD7147 showad7147(3, 4, 15);
+	uint16_t data[12] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 
 	showad7147.show3DBox(data);
 	sleep(5);
