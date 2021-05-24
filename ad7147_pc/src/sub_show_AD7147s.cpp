@@ -7,13 +7,13 @@ ShowAD7147 showad7147_0(3, 4, 4000);
 ShowAD7147 showad7147_1(3, 4, 4000);
 uint16_t data[NUMBER_OF_REGISTERS] = {0};
 uint32_t offset[NUMBER_OF_REGISTERS*AD7147QUANTITY] = {0};
-bool flag = false;
+bool flag[AD7147QUANTITY] = {false};
 int num[AD7147QUANTITY] = {0};
 int32_t tmp = 0;
 
 void Callback(uint8_t which, const std_msgs::Int32MultiArray& msg)
 {
-	if (flag == false)
+	if (flag[which] == false)
 	{
 		num[which]++;
 		for (int i=0; i<NUMBER_OF_REGISTERS; i++)
@@ -28,7 +28,7 @@ void Callback(uint8_t which, const std_msgs::Int32MultiArray& msg)
 				offset[i+which*NUMBER_OF_REGISTERS] = offset[i+which*NUMBER_OF_REGISTERS]/(num[which]+1) - 500;
 				printf("%d : %d : %d\n", which, i, offset[i+which*NUMBER_OF_REGISTERS]);
 			}
-			flag = true;
+			flag[which] = true;
 		}
 	}
 
@@ -67,8 +67,8 @@ int main(int argc, char **argv){
 	ROS_INFO("[sub_show_AD7147s] init to sub_show_AD7147s");
 
 	ros::NodeHandle n;
-	ros::Subscriber sub = n.subscribe("AD7147_vals0", 2, Callback0);
-	ros::Subscriber sub = n.subscribe("AD7147_vals1", 2, Callback1);
+	ros::Subscriber sub0 = n.subscribe("AD7147_vals0", 2, Callback0);
+	ros::Subscriber sub1 = n.subscribe("AD7147_vals1", 2, Callback1);
 	ros::Rate loop_rate(10);
 
 	while(ros::ok())
