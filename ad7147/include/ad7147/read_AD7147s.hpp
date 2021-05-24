@@ -49,37 +49,24 @@ class AD7147SPIDev
 
 	public:
 		AD7147SPIDev(const char* spidev, int start_bit, int count);
-		void initialize();
-		int write(uint16_t addr, void* buffer, size_t size);
+		void initialize(uint8_t which);
+		int write(uint8_t which, uint16_t addr, void* buffer, size_t size);
 		void speak(const void* ptr, size_t sz);
 		template<typename X> void speak(const X& val);
 		// int getCVal(uint16_t addr);
-		void getCVal(uint16_t (&data)[NUMBER_OF_REGISTERS]);
+		void getCVal(uint8_t which, uint16_t (&data)[NUMBER_OF_REGISTERS]);
 		void select(int which);
 		void unselect(int which);
-		int read(uint16_t addr, void* buffer, size_t size);
-		uint16_t read(uint16_t addr);
+		int read(uint8_t which, uint16_t addr, void* buffer, size_t size);
+		uint16_t read(uint8_t which, uint16_t addr);
 		~AD7147SPIDev();
 };
 
 class AD7147SPIDevMulti : public AD7147SPIDev
 {
 	// private:
-	// 	int fd_spi, fd_gpio;
-	// 	uint8_t spi_mode;
-	// 	uint32_t spi_speed;
-	// 	uint32_t gpio_mask;
-	// 	int gpio_start_bit;
-	// 	int gpio_pincount;
-	// 	uint32_t *gpio;
+
 
 	public:
 		using AD7147SPIDev::AD7147SPIDev;
-		// AD7147SPIDevMulti(const char* filepath, int start_bit, int count);
-		//  void select(int which);
-		//  void unselect(int which);
-		//  int read(int which, uint16_t addr, void* buffer, size_t size);
-		//  int read(int which, uint16_t addr);
-		//  int write(int which, uint16_t addr, void* buffer, size_t size);
-		// ~AD7147SPIDevMulti();
 };

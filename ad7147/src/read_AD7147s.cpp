@@ -41,7 +41,7 @@ AD7147SPIDev::~AD7147SPIDev()
 }
 
 
-void AD7147SPIDev::initialize()
+void AD7147SPIDev::initialize(uint8_t which)
 {
 
 	uint16_t initialization_array[NUMBER_OF_REGISTERS][8] //p53 0x080-0x0DF
@@ -84,7 +84,7 @@ void AD7147SPIDev::initialize()
 		{
 			config[j] = htons(config[j]); //big endian
 		}
-		write(base_address, &config, sizeof(config));
+		write(which, base_address, &config, sizeof(config));
 	}
 
 	// for(int i=0x80; i<=0xDF; i++)
@@ -94,11 +94,11 @@ void AD7147SPIDev::initialize()
 
 	// READ P.38 for MAGIC NUMBERS
 	uint8_t initialization_bytes[] {0x82, 0xb2, 0x00, 0x00, 0x32, 0x30, 0x04, 0x19, 0x08, 0x32, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-	write(0x00, initialization_bytes, sizeof(initialization_bytes));
+	write(which, 0x00, initialization_bytes, sizeof(initialization_bytes));
 
 	uint16_t start_word = 0x0FFF;
 	start_word = htons(start_word);
-	write(0x01, &start_word, sizeof(start_word));
+	write(which, 0x01, &start_word, sizeof(start_word));
 }
 
 void AD7147SPIDev::speak(const void* ptr, size_t sz)
@@ -117,7 +117,7 @@ template<typename X> void AD7147SPIDev::speak(const X& val)
 	speak(&val, sizeof(X));
 };
 
-int AD7147SPIDev::write(uint16_t addr, void* buffer, size_t size) //void pointer: if you print it, need cast
+int AD7147SPIDev::write(uint8_t which, uint16_t addr, void* buffer, size_t size) //void pointer: if you print it, need cast
 {
 	spi_command_word write_word(false, addr);
 	auto transfer_size = size + sizeof(write_word);
@@ -127,14 +127,14 @@ int AD7147SPIDev::write(uint16_t addr, void* buffer, size_t size) //void pointer
 	memcpy(write_buffer + sizeof(write_word), buffer, size);
 	speak(write_buffer, transfer_size); //print
 
-	select(0);
+	select(which);
 	int result = ::write(fd_spi, write_buffer, transfer_size);
-	unselect(0);
+	unselect(which);
 	free(write_buffer);
 	return result;
 }
 
-int AD7147SPIDev::read(uint16_t addr, void* buffer, size_t size)
+int AD7147SPIDev::read(uint8_t which, uint16_t addr, void* buffer, size_t size)
 {
 	if(size % sizeof(uint16_t)!=0) return -1;
 
@@ -163,25 +163,25 @@ int AD7147SPIDev::read(uint16_t addr, void* buffer, size_t size)
 	// printf("-----\n");
 	// free(write_buffer);
 
-	select(0);
+	select(which);
 	int result = ioctl(fd_spi, SPI_IOC_MESSAGE(2), transfer_object);
-	unselect(0);
+	unselect(which);
 	return result;
 }
 
-uint16_t AD7147SPIDev::read(uint16_t addr)
+uint16_t AD7147SPIDev::read(uint8_t which, uint16_t addr)
 {
 	uint16_t read_result = 0;
-    int send_result = read(addr, &read_result, sizeof(read_result));
+    int send_result = read(which, addr, &read_result, sizeof(read_result));
     if(send_result<0) return send_result;
     else return read_result;
 }
 
-void AD7147SPIDev::getCVal(uint16_t (&data)[NUMBER_OF_REGISTERS])
+void AD7147SPIDev::getCVal(uint8_t which, uint16_t (&data)[NUMBER_OF_REGISTERS])
 {
 	for (int i=0x0B; i<=0x16; i++)
 	{
-		data[i-0x0B] = htons(read(i));
+		data[i-0x0B] = htons(read(which, i));
 		printf("%d ", data[i-0x0B]);
 		// printf("%d ", htons(read(i)));
 	}

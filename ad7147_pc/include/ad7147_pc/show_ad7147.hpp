@@ -4,6 +4,7 @@
 #include <iostream>
 
 #define NUMBER_OF_REGISTERS 12
+#define AD7147QUANTITY 2
 
 class ShowAD7147
 {
